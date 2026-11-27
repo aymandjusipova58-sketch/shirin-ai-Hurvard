@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shirin AI — Dream · Learn · Achieve</title>
+  <style>
+    :root {
+      --bg: #090616;
+      --card: #16102d;
+      --card-2: #211742;
+      --accent: #7c3aed;
+      --accent-2: #ec4899;
+      --gold: #fbbf24;
+      --text: #ffffff;
+      --muted: #b8b0d8;
+      --border: rgba(255, 255, 255, 0.12);
+    }
+
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top, #24124d, var(--bg) 65%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 440px;
+      background: rgba(15, 10, 33, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      min-height: 760px;
+    }
+
+    .header {
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(90deg, rgba(124,58,237,0.22), rgba(236,72,153,0.14));
+    }
+
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--accent-2));
+      display: grid; place-items: center; font-weight: 800; color: #120924;
+    }
+    .gold { color: var(--gold); font-weight: 700; }
+    .muted { color: var(--muted); font-size: 13px; }
+
+    .screen { display: none; padding: 18px; flex: 1; overflow-y: auto; }
+    .screen.active { display: block; }
+
+    .box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .progress-wrap {
+      height: 10px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), var(--accent-2));
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .tile {
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      text-align: left;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .tile:hover { border-color: var(--gold); }
+    .tile strong { display: block; margin-top: 6px; font-size: 14px; }
+
+    .btn {
+      width: 100%;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .option {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 10px 12px;
+      margin-top: 8px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--card-2);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .chat-log {
+      max-height: 360px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .msg {
+      padding: 11px 14px;
+      border-radius: 16px;
+      max-width: 85%;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .msg.ai { background: var(--card-2); align-self: flex-start; border-bottom-left-radius: 4px; }
+    .msg.user { background: var(--accent); align-self: flex-end; border-bottom-right-radius: 4px; }
+
+    .chat-input-row { display: flex; gap: 8px; }
+    .chat-input-row input {
+      flex: 1;
+      padding: 11px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+    }
+    .icon-btn {
+      padding: 0 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--card-2);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .nav {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--border);
+      background: #100924;
+    }
+    .nav button {
+      background: none;
+      border: none;
+      color: var(--muted);
+      padding: 12px 6px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .nav button.active { color: var(--gold); font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <div class="brand">
+        <div class="avatar">SA</div>
+        <div>
+          <div><strong>Shirin AI</strong> <span class="gold">👑</span></div>
+          <div class="muted">Dream · Learn · Achieve</div>
+        </div>
+      </div>
+      <div class="muted">Grade: 11th</div>
+    </div>
+
+    <section id="home" class="screen active">
+      <div class="box" style="border-color: rgba(251,191,36,0.45);">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <strong>🏛️ Harvard Orzusi</strong>
+          <span class="gold" id="goalPercent">68%</span>
+        </div>
+        <div class="muted">Birgalikda erishamiz! Government + Political Economy</div>
+        <div class="progress-wrap">
+          <div class="progress-bar" id="goalBar" style="width: 68%;"></div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <button class="tile" onclick="openTab('sat')">🇬🇧<strong>English Language</strong><span class="muted">Reading & Writing</span></button>
+        <button class="tile" onclick="openTab('sat')">🧮<strong>Mathematics</strong><span class="muted">SAT Math drills</span></button>
+        <button class="tile" onclick="openTab('sat')">🎓<strong>SAT Preparation</strong><span class="muted">Practice Tests</span></button>
+        <button class="tile" onclick="openTab('chat')">🤖<strong>AI Assistant</strong><span class="muted">Ask “Hi Shirin”</span></button>
+        <button class="tile" onclick="openTab('stats')">📊<strong>My Progress</strong><span class="muted">Weekly stats</span></button>
+        <button class="tile" onclick="openTab('planner')">📅<strong>Study Planner</strong><span class="muted">Daily 10 problems</span></button>
+      </div>
+    </section>
+
+    <section id="sat" class="screen">
+      <div class="box">
+        <strong>🎯 SAT Math Practice Test</strong>
+        <p class="muted" id="qText">Solve for x: 2x + 3 = 11</p>
+        <button class="option" onclick="checkAnswer(3)">A) 3</button>
+        <button class="option" onclick="checkAnswer(4)">B) 4</button>
+        <button class="option" onclick="checkAnswer(5)">C) 5</button>
+        <button class="option" onclick="checkAnswer(6)">D) 6</button>
+        <p id="qFeedback" class="muted" style="margin-top:10px;"></p>
+        <button class="btn" onclick="nextQuestion()">Keyingi masala →</button>
+      </div>
+    </section>
+
+    <section id="chat" class="screen">
+      <div class="chat-log" id="chatLog">
+        <div class="msg ai">Salom! 😊 Men — Shirin AI. Sizning shaxsiy ustozingizman! Bugungi maqsad: SAT Math bo‘yicha 10 ta masala yechish 💪</div>
+      </div>
+      <div class="chat-input-row">
+        <input id="chatInput" type="text" placeholder="Savolingizni yozing yoki 'Hi Shirin' deng..." onkeydown="if(event.key==='Enter') sendMessage()" />
+        <button class="icon-btn" onclick="startVoice()" title="Ovozli kiritish">🎤</button>
+        <button class="icon-btn" onclick="sendMessage()">➤</button>
+      </div>
+    </section>
+
+    <section id="stats" class="screen">
+      <div class="box">
+        <strong>📈 Overall Progress: <span class="gold" id="overallVal">78%</span></strong>
+        <div class="muted" style="margin-top:8px;">English: 85% · Math: 82% · SAT: 76% · Government: 70%</div>
+      </div>
+      <div class="box">
+        <strong>🏆 Trophy</strong>
+        <p class="muted">You're amazing! Keep going! 💜</p>
+      </div>
+    </section>
+
+    <section id="planner" class="screen">
+      <div class="box">
+        <strong>📅 Bugungi reja</strong>
+        <p class="muted">• 10 ta SAT Math masalasi<br>• 20 ta yangi inglizcha so‘z<br>• Harvard essay g‘oyalarini ko‘rib chiqish</p>
+      </div>
+    </section>
+
+    <div class="nav">
+      <button class="active" onclick="openTab('home', this)">🏠 Home</button>
+      <button onclick="openTab('sat', this)">📝 SAT Test</button>
+      <button onclick="openTab('chat', this)">🤖 Shirin AI</button>
+      <button onclick="openTab('stats', this)">📊 Stats</button>
+    </div>
+  </div>
+
+  <script>
+    let progress = 68;
+    const questions = [
+      { q: "Solve for x: 2x + 3 = 11", ans: 4, exp: "2x = 11 - 3 = 8, shuning uchun x = 4." },
+      { q: "If 3x - 5 = 16, what is the value of x?", ans: 7, exp: "3x = 21, demak x = 7." }
+    ];
+    let qIdx = 0;
+
+    function openTab(id, btn) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      if (btn) {
+        document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+    }
+
+    function checkAnswer(val) {
+      const fb = document.getElementById('qFeedback');
+      const current = questions[qIdx];
+      if (val === current.ans) {
+        progress = Math.min(100, progress + 2);
+        document.getElementById('goalPercent').textContent = progress + '%';
+        document.getElementById('goalBar').style.width = progress + '%';
+        fb.innerHTML = `<span class="gold">Great! 🎉 To‘g‘ri!</span> ${current.exp}`;
+      } else {
+        fb.innerHTML = `Qaytadan urinib ko‘ring! Izoh: ${current.exp}`;
+      }
+    }
+
+    function nextQuestion() {
+      qIdx = (qIdx + 1) % questions.length;
+      document.getElementById('qText').textContent = questions[qIdx].q;
+      document.getElementById('qFeedback').textContent = '';
+    }
+
+    function addMsg(text, who) {
+      const log = document.getElementById('chatLog');
+      const div = document.createElement('div');
+      div.className = 'msg ' + who;
+      div.textContent = text;
+      log.appendChild(div);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+      addMsg(text, 'user');
+      input.value = '';
+
+      setTimeout(() => {
+        const reply = `Shirin AI javobi: "${text}" bo‘yicha qadam-baqadam yechamiz! Avval berilgan qiymatlarni ajratib oling va formulani qo‘llang.`;
+        addMsg(reply, 'ai');
+        if ('speechSynthesis' in window) {
+          const utter = new SpeechSynthesisUtterance(reply);
+          utter.lang = 'uz-UZ';
+          speechSynthesis.speak(utter);
+        }
+      }, 300);
+    }
+
+    function startVoice() {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) {
+        alert("Brauzeringiz ovozni aniqlashni qo‘llab-quvvatlamaydi. Matn yozib yuboring.");
+        return;
+      }
+      const rec = new SpeechRec();
+      rec.lang = 'uz-UZ';
+      rec.onresult = (e) => {
+        document.getElementById('chatInput').value = e.results[0][0].transcript;
+        sendMessage();
+      };
+      rec.start();
+    }
+  </script>
+</body>
+</html>
